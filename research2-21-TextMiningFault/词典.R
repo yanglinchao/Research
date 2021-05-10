@@ -24,12 +24,7 @@ vec_appearance <- data_appearance$故障现象
 cut_appearance <- segment(vec_appearance, worker)
 # 生成一个结果数据框
 cutdata_appearance <- data.frame(id = rep(data_appearance$编号, each=2), appearance = rep(data_appearance$故障现象, each=2))
-# 将分词结果整理
-for(i in 1:(nrow(cutdata_appearance)/2)){
-  cutdata_appearance$appearance[2*i] <- paste(cut_appearance[[i]], collapse = " ")
-}
-# 输出结果
-write.csv(cutdata_appearance, "cutdata_appearance.csv", row.names = FALSE)
+
 
 
 ## 对处理方式进行分词
