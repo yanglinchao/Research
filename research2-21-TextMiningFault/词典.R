@@ -15,6 +15,7 @@ worker <- worker(type = "mix",
                  stop_word = "C:/Users/ylc/GitHub/Research/research2-21-TextMiningFault/stopwords/bd_hit_scu_stopwords.txt",
                  encoding = "UTF-8")
 
+
 ## 对故障现象进行分词
 # 提取数据
 data_appearance <- tf_data[, c("编号", "故障现象")]
@@ -22,9 +23,6 @@ data_appearance <- tf_data[, c("编号", "故障现象")]
 vec_appearance <- data_appearance$故障现象
 # 分词，cut_appearance是分词结果！！！！
 cut_appearance <- segment(vec_appearance, worker)
-# 生成一个结果数据框
-cutdata_appearance <- data.frame(id = rep(data_appearance$编号, each=2), appearance = rep(data_appearance$故障现象, each=2))
-
 
 
 ## 对处理方式进行分词
@@ -34,11 +32,59 @@ data_solve <- tf_data[, c("编号", "处理方式")]
 vec_solve <- data_solve$处理方式
 # 分词，cut_solve是分词结果！！！！！
 cut_solve <- segment(vec_solve, worker)
-# 生成一个结果数据框
-cutdata_solve <- data.frame(id = rep(data_solve$编号, each=2), solve = rep(data_solve$处理方式, each=2))
-# 将分词结果整理
-for(i in 1:(nrow(cutdata_solve)/2)){
-  cutdata_solve$solve[2*i] <- paste(cut_solve[[i]], collapse = " ")
+
+## 对产品名称进行分词
+# 提取数据
+data_product <- tf_data[, c("编号", "产品名称")]
+# 将数据整理为向量
+vec_product <- data_product$产品名称
+# 分词，cut_product是分词结果！！！
+cut_product <- segment(vec_product, worker)
+
+## 对故障部位进行分词
+# 提取数据
+data_faultsite <- tf_data[, c("编号", "故障部位")]
+# 将数据整理为向量
+vec_faultsite <- data_faultsite$故障部位
+# 分词，cut_faultsite是分词结果！！！
+cut_faultsite <- segment(vec_faultsite, worker)
+
+## 对深层现象进行分词
+# 提取数据
+data_deepph <- tf_data[, c("编号", "深层现象")]
+# 将数据整理为向量
+vec_deepph <- data_deepph$深层现象
+# 分词，cut_deepph是分词结果！！！
+cut_deepph <- segment(vec_deepph, worker)
+
+## 对故障分析进行分词
+# 提取数据
+data_faultanalysis <- tf_data[, c("编号", "故障分析")]
+# 将数据整理为向量
+vec_faultanalysis <- data_faultanalysis$故障分析
+# 分词，cut_faultanalysis是分词结果！！！
+cut_faultanalysis <- segment(vec_faultanalysis, worker)
+
+
+# 将分词结果全部保存为RData
+# save(cut_appearance, cut_deepph, cut_faultanalysis, cut_faultsite, cut_solve, file = "cut_allresults.RData")
+
+# 将各个结果整理为一个向量
+function_cutlist2vec <- function(list){
+  result <- list[[1]]
+  for(i in 2:length(list)){
+    result <- c(result, list[[i]])
+  }
+  return(result)
 }
-# 输出分词结果
-write.csv(cutdata_solve, "cutdata_solve.csv", row.names = FALSE)
+cutvec_appearance <- function_cutlist2vec(cut_appearance)
+cutvec_deepph <- function_cutlist2vec(cut_deepph)
+cutvec_faultanalysis <- function_cutlist2vec(cut_faultanalysis)
+cutvec_faultsite <- function_cutlist2vec(cut_faultsite)
+cutvec_product <- function_cutlist2vec(cut_product)
+
+# 合并结果为一个向量并去重
+cutvec_all <- c(cutvec_appearance, cutvec_deepph, cutvec_faultanalysis, cutvec_faultsite, cutvec_product)
+cutvec_all <- unique(cutvec_all)
+# 生成txt
+write.csv(cutvec_all, "cutvec_all.csv", row.names = FALSE)
