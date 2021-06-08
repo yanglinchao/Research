@@ -53,6 +53,7 @@ def simpleWordCut(list4wordcut, stopwords, cut_all=True, HMM=True):
 
 stopwords = stopwordslist(r"C:/Users/ylc/GitHub/Research/research2-21-TextMiningFault/stopwords/bd_hit_scu_stopwords.txt")
 list_result_simpleWordCut = simpleWordCut(list_4wordcut, stopwords)
+# data_resultSimpleWordCut = pd.DataFrame(list_result_simpleWordCut)
+# data_resultSimpleWordCut = data_resultSimpleWordCut.drop_duplicates()
 data_resultSimpleWordCut = pd.DataFrame(list_result_simpleWordCut)
-data_resultSimpleWordCut = data_resultSimpleWordCut.drop_duplicates()
 data_resultSimpleWordCut.to_csv("C:/Users/ylc/GitHub/Research/research2-21-TextMiningFault/resultWC4dict.csv", header=False, index=False)
