@@ -11,6 +11,7 @@ import numpy as np
 import os
 import lda
 import jieba
+import gensim
 
 ################ function
 
@@ -23,9 +24,11 @@ def SWC2Sklearn(resultlist):
     return result
 
 
-# 生成TD-IDF词向量function
-def ChineseFeatureVec(resultlist, n_topics=5, n_iter=100, random_state=0):
-
+# 生成TD-IDF和LDA词向量function
+def TfidfLda(resultlist, n_topics=5, n_iter=100, random_state=0,):
+    
+    # tf-idf和LDA数据准备
+    
     counter = CountVectorizer()
     counts = counter.fit_transform(resultlist)
     
@@ -43,12 +46,36 @@ def ChineseFeatureVec(resultlist, n_topics=5, n_iter=100, random_state=0):
     topic_word = model.topic_word_
     doc_topic = model.doc_topic_    
     
+
+    
+
+    
     # result
     result = {'tfidf_wordVoc':wordVocabulary,
               'tfidf_wordVec':wordVector,
               'tfidf_tfidfVec':tfidfVector,
               'lda_doctopicVec':doc_topic}
     return result
+
+def WORD2VEC(resultlist, sg=0, vector_size=100, window=5, min_count=2, negative=3, sample=0.001, hs=0, workers=4, epochs=5):
+    # word2vec
+    # 准备数据
+    list_2vec = []
+    for i in resultlist:
+        list_2vec.append(i.split())
+    word2vecModel = gensim.models.word2vec.Word2Vec(list_2vec,
+                                                    sg=sg, # 训练算法，默认0对应CBOW，1对应skip-gram
+                                                    vector_size=vector_size, # 输出词的向量维度
+                                                    window=window, # 训练窗口大小，默认5，考虑前后各5个词的影响
+                                                    min_count=min_count, # 少于min_count次数的单词会被丢弃
+                                                    negative=negative, # 如果>0则会采用negativesamping，用于设置多少个noise words
+                                                    sample=sample, # 采样阈值，如果一个词在训练样本中出现评率越大，那么就越会被采样，范围(0, 1e-5)
+                                                    hs=hs, # 是否采用HS方法，0使用，1不使用，默认0
+                                                    workers=workers, # 参数控制训练的并行数
+                                                    epochs=epochs) #迭代次数，默认为5
+    result = word2vecModel.wv
+    return result
+    
 
 
 
@@ -61,14 +88,30 @@ data_tf = pd.read_csv('原始数据.csv',
                       encoding='utf-8')
 data_tf.columns = ['deepph', 'ph', 'analyze', 'handle']
 data_tf = data_tf[1:]
-data_tf.index = pd.Series(range(1, 880))
+data_tf.index = pd.Series(range(1, 878))
 
 stopwords = stopwordslist(r"C:/Users/ylc/GitHub/Research/research2-21-TextMiningFault/stopwords/bd_hit_scu_stopwords.txt")
 # 对故障现象(ph)进行分词
 data_cut_ph = data_tf.ph
 list_result_cut_ph = simpleWordCut(pd.Series.tolist(data_cut_ph.astype(str)), stopwords, cut_all=False, HMM=False)
 # 提取故障现象(ph)的特征向量
-list_4sklearn_ph = SWC2Sklearn(list_result_cut_ph)
-dic_result_CFV_ph = ChineseFeatureVec(list_4sklearn_ph, n_topics=5, n_iter=100, random_state=0)
+list_4Feature_ph = SWC2Sklearn(list_result_cut_ph)
+dic_result_CFV_ph = ChineseFeatureVec(list_4Feature_ph, n_topics=5, n_iter=100, random_state=0)
 list_result_tfidf_ph = dic_result_CFV_ph['tfidf_tfidfVec']
 list_result_lda_ph = dic_result_CFV_ph['lda_doctopicVec']
+
+a = list_4Feature_ph[0]
+a
+b = []
+for i in list_4Feature_ph:
+    b.append(i.split())
+b
+model = gensim.models.word2vec.Word2Vec(b, sg=1, vector_size=100, window=5, min_count=2, negative=3, sample=0.001, hs=1, workers=4)
+model.wv[1]
+c = b[0]
+c
+d = []
+for i in c:
+    d.append(model.wv[i])
+d
+e = WORD2VEC(list_4Feature_ph)
