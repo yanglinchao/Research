@@ -24,10 +24,31 @@ def SWC2Sklearn(resultlist):
     return result
 
 
-# 生成TD-IDF和LDA词向量function
-def TfidfLda(resultlist, n_topics=5, n_iter=100, random_state=0,):
+# 生成TD-IDF词向量function
+def TfIdf(resultlist):
     
     # tf-idf和LDA数据准备
+    
+    counter = CountVectorizer()
+    counts = counter.fit_transform(resultlist)
+    
+    # tf-idf
+    tfidfer = TfidfTransformer()
+    tfidf = tfidfer.fit_transform(counts)
+    wordVocabulary = counter.vocabulary_
+    wordVector = counts.toarray()
+    tfidfVector = tfidf.toarray()  
+    
+    # result
+    result = {'tfidf_wordVoc':wordVocabulary,
+              'tfidf_wordVec':wordVector,
+              'tfidf_tfidfVec':tfidfVector}
+    return result
+
+# 生成TD-IDF和LDA词向量function
+def LDA(resultlist, n_topics=5, n_iter=100, random_state=0,):
+    
+    # LDA数据准备
     
     counter = CountVectorizer()
     counts = counter.fit_transform(resultlist)
@@ -46,16 +67,12 @@ def TfidfLda(resultlist, n_topics=5, n_iter=100, random_state=0,):
     topic_word = model.topic_word_
     doc_topic = model.doc_topic_    
     
-
-    
-
-    
     # result
-    result = {'tfidf_wordVoc':wordVocabulary,
-              'tfidf_wordVec':wordVector,
-              'tfidf_tfidfVec':tfidfVector,
-              'lda_doctopicVec':doc_topic}
+    result = {'lda_doctopicVec':doc_topic}
     return result
+
+
+
 
 def WORD2VEC(resultlist, sg=0, vector_size=100, window=5, min_count=2, negative=3, sample=0.001, hs=0, workers=4, epochs=5):
     # word2vec
@@ -96,22 +113,9 @@ data_cut_ph = data_tf.ph
 list_result_cut_ph = simpleWordCut(pd.Series.tolist(data_cut_ph.astype(str)), stopwords, cut_all=False, HMM=False)
 # 提取故障现象(ph)的特征向量
 list_4Feature_ph = SWC2Sklearn(list_result_cut_ph)
-dic_result_CFV_ph = ChineseFeatureVec(list_4Feature_ph, n_topics=5, n_iter=100, random_state=0)
-list_result_tfidf_ph = dic_result_CFV_ph['tfidf_tfidfVec']
-list_result_lda_ph = dic_result_CFV_ph['lda_doctopicVec']
+dic_result_CFV_ph = TfIdf(list_4Feature_ph)
+tfidfVec = dic_result_CFV_ph['tfidf_tfidfVec']
 
-a = list_4Feature_ph[0]
-a
-b = []
-for i in list_4Feature_ph:
-    b.append(i.split())
-b
-model = gensim.models.word2vec.Word2Vec(b, sg=1, vector_size=100, window=5, min_count=2, negative=3, sample=0.001, hs=1, workers=4)
-model.wv[1]
-c = b[0]
-c
-d = []
-for i in c:
-    d.append(model.wv[i])
-d
-e = WORD2VEC(list_4Feature_ph)
+
+
+
