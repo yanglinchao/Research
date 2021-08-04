@@ -127,32 +127,61 @@ def LDA_Gensim(list_result_wordcut, tfidf=False, num_topics=5):
 
 
 # 创建word2vec模型
-def WORD2VEC_Gensim(list_result_wordcut, sg=0, vector_size=100, window=5, min_count=0, negative=3, sample=0.001, hs=0, workers=4, epochs=5):
+def WORD2VEC_Gensim(list_result_wordcut, sg=0, vector_size=100, window=5, min_count=0, negative=0, sample=0.001, hs=0, workers=4, epochs=10):
+    
+    from gensim.models.word2vec import Word2Vec
+    
     # word2vec
-    word2vecModel = models.word2vec.Word2Vec(list_result_wordcut,
-                                             sg=sg, # 训练算法，默认0对应CBOW，1对应skip-gram
-                                             vector_size=vector_size, # 输出词的向量维度
-                                             window=window, # 训练窗口大小，默认5，考虑前后各5个词的影响
-                                             min_count=min_count, # 少于min_count次数的单词会被丢弃
-                                             negative=negative, # 如果>0则会采用negativesamping，用于设置多少个noise words
-                                             sample=sample, # 采样阈值，如果一个词在训练样本中出现评率越大，那么就越会被采样，范围(0, 1e-5)
-                                             hs=hs, # 是否采用HS方法，0使用，1不使用，默认0
-                                             workers=workers, # 参数控制训练的并行数
-                                             epochs=epochs) #迭代次数，默认为5
+    word2vecModel = Word2Vec(list_result_wordcut,
+                             vector_size=vector_size, # 输出词的向量维度
+                             window=window, # 训练窗口大小，默认5，考虑前后各5个词的影响
+                             min_count=min_count, # 少于min_count次数的单词会被丢弃
+                              workers=workers, # 参数控制训练的并行数
+                             sg=sg, # 训练算法，默认0对应CBOW，1对应skip-gram
+                             hs=hs, # hs=0使用negative sampling; hs=1使用hierarchical softmax
+                             negative=negative, # 如果>0则会采用negativesamping，用于设置多少个noise words，通常5-20
+                             sample=sample, # 采样阈值，如果一个词在训练样本中出现评率越大，那么就越会被采样，范围(0, 1e-5)
+                             epochs=epochs #迭代次数，默认为5
+                             ) 
     result = word2vecModel.wv
     return result
 
 # 生成word2vec特征向量
-def featureVec_2vec(list_result_wordcut, result_2vecModel, method="mean"):
+def featureVec_2vec(list_result_wordcut, mv_2vecModel, method="mean"):
     result = []
     for i in range(len(list_result_wordcut)):
         single_result = []
         for word in list_result_wordcut[i]:
             if method == "mean":
-                single_result.append(result_2vecModel[word].mean())
+                single_result.append(mv_2vecModel[word].mean())
             elif method == "max":
-                single_result.append(result_2vecModel[word].max())
+                single_result.append(mv_2vecModel[word].max())
             elif method == "min":
-                single_result.append(result_2vecModel[word].min())
+                single_result.append(mv_2vecModel[word].min())
         result.append(single_result)
     return result
+
+
+# 创建doc2vec模型
+def DOC2VEC_Gensim(list_result_wordcut, dm=0, vector_size=100, window=5, min_count=0, workers=4, epochs=10, hs=0, negative=3):
+    
+    from gensim.models.doc2vec import Doc2Vec, TaggedDocument
+    
+    # 把分词后的结果转换成用于doc2vec的输入
+    documents = [TaggedDocument(doc, [i]) for i, doc in enumerate(list_result_wordcut)]
+    # 建立doc2vec模型
+    model = Doc2Vec(documents,
+                    dm=dm, # dm=0使用PV-DBOW模型，dm=1使用PV-DM模型
+                    vector_size=vector_size, # 特征向量维度
+                    window=window, # 训练窗口大小，当前词和预测值之间的距离
+                    min_count=min_count, # 频次小于该值的词将被忽略
+                    workers=workers, # 建模的并行数
+                    epochs=epochs, # 迭代次数
+                    hs=hs, # hs=0使用negative sampling; hs=1使用hierarchical softmax
+                    negative=negative # 如果>0，将使用负采样，用于设置noise words数量
+                    )
+    result = model
+    return model
+
+
+
