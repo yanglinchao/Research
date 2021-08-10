@@ -82,7 +82,7 @@ result_LDA = pd.DataFrame(result_LDA)
 
 
 # 提取word2vec特征向量
-model_word2vec = WORD2VEC_Gensim(list_result_cut_ph, sg=0, vector_size = 200,
+model_word2vec = WORD2VEC_Gensim(list_result_cut_ph, sg=0, vector_size=200,
                                  window=10, min_count=0, negative=0, sample=0.001,
                                  hs=0, workers=4, epochs=100)
 result_word2vec = featureVec_2vec(list_result_cut_ph, model_word2vec)
@@ -90,7 +90,7 @@ result_word2vec = pd.DataFrame(result_word2vec)
 
 
 # 提取doc2vec特征向量
-model_doc2vec = DOC2VEC_Gensim(list_result_cut_ph, dm=0, vector_size=100,
+model_doc2vec = DOC2VEC_Gensim(list_result_cut_ph, dm=0, vector_size=200,
                                window=10, min_count=0,
                                workers=4, epochs=100,
                                hs=0, negative=0)
@@ -140,5 +140,3 @@ result_data_doc2vec.to_csv("doc2vec.csv", index=False)
 result_data_tfidfword2vec_series.to_csv("tfidfwords.csv", index=False)
 result_data_tfidfword2vec_parallel.to_csv("tfidfwordp.csv", index=False)
 result_data_tfidfword2vec_multiply.to_csv("tfidfwordm.csv", index=False)
-
-
