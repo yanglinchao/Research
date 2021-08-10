@@ -29,14 +29,21 @@ def checkStopwords(resultFromCut, stopwords):
     return outstr
 
 # 创建分词function
-def simpleWordCut(list_4wordcut, stopwords, cut_all=False, HMM=False):
+def simpleWordCut(list_4wordcut, stopwords=False, cut_all=False, HMM=False):
+    # stopwords:是否使用停用词表，默认False，如果传入停用词表，则直接使用
+    # cut_all:是否使用全模式（把句子中所有可以成词的词语都扫描出来），默认False是使用精确模式（将句子最精确地切开，适合文本分析）
+    # HMM：是否使用HMM模型（便于新词发现），默认False
     result = []
     for i in range(0, len(list_4wordcut)):
         result_onecut = []
         onecut = jieba.cut(list_4wordcut[i], cut_all=cut_all, HMM=HMM)
-        onecut = checkStopwords(onecut, stopwords)
-        for j in onecut:          
-            result_onecut.append(j)
+        if stopwords == False:
+            for j in onecut:
+                result_onecut.append(j)
+        else:
+            onecut = checkStopwords(onecut, stopwords)
+            for j in onecut:          
+                result_onecut.append(j)
         result.append(result_onecut)
     return result
 
@@ -53,15 +60,22 @@ def tfidf_Gensim(list_result_wordcut):
     # 转化为tf-idf向量
     # corpus是一个返回bow向量的迭代器。下面将完成对corpus中出现的每一个特征的IDF值的统计工作
     tfidf_model = models.TfidfModel(corpus)
-    corpus_tfidf = [tfidf_model[doc] for doc in corpus]
+    
+    corpus_tfidf = list(tfidf_model[corpus])
+    len_dictionary = len(dictionary)
     result = []
     for i in range(len(corpus_tfidf)):
-        a = corpus_tfidf[i]
-        singleresult = []
-        for j in range(len(a)):
-            singleresult.append(a[j][1])
-        result.append(singleresult)
-    
+        # 生成一个和字典长度相等的向量
+        result_one = [0]*len_dictionary
+        # 提取第i个文档的corpus_tfidf
+        corpus_tfidf_i = corpus_tfidf[i]
+        for j in range(len(corpus_tfidf_i)):
+            # 提取该文档的第j个单词的corpus_tfidf
+            doc_corpus_tfidf = corpus_tfidf_i[j] # 位置0是单词在result_one中的位置，位置1是单词的tf-idf值
+            site = doc_corpus_tfidf[0]
+            doc_tfidf = doc_corpus_tfidf[1]
+            result_one[site] = doc_tfidf
+        result.append(result_one)    
     return result
     
 
@@ -83,14 +97,14 @@ def LSI_Gensim(list_result_wordcut, tfidf=False, num_topics=5):
         lsi_model = models.LsiModel(corpus, id2word=dictionary, num_topics=num_topics)    
 
     # 提取LSI特征向量
-    corpus_lsi = [lsi_model[doc] for doc in corpus]
+    corpus_lsi = list(lsi_model[corpus])
     result = []
     for i in range(len(corpus_lsi)):
-        a = corpus_lsi[i]
-        single_result = []
-        for j in range(len(a)):
-            single_result.append(a[j][1])
-        result.append(single_result)
+        result_one = []
+        corpus_lsi_i = corpus_lsi[i]
+        for j in range(len(corpus_lsi_i)):
+            result_one.append(corpus_lsi_i[j][1])
+        result.append(result_one)
     
     return result
 
@@ -105,7 +119,7 @@ def LDA_Gensim(list_result_wordcut, tfidf=False, num_topics=5):
     # 向量的每一个元素代表了一个word在这篇文档中出现的次数
     corpus = [dictionary.doc2bow(text) for text in list_result_wordcut]
     
-    # 建立LSI模型
+    # 建立LDA模型
     if tfidf == True:
         tfidf_model = models.TfidfModel(corpus)
         tfidf_corpus = tfidf_model[corpus]
@@ -113,15 +127,21 @@ def LDA_Gensim(list_result_wordcut, tfidf=False, num_topics=5):
     else:
         lda_model = models.LdaModel(corpus, id2word=dictionary, num_topics=num_topics)    
 
-    # 提取LSI特征向量
-    corpus_lda = [lda_model[doc] for doc in corpus]
+    # 提取LDA特征向量
+    corpus_lda = list(lda_model[corpus])
     result = []
     for i in range(len(corpus_lda)):
-        a = corpus_lda[i]
-        single_result = []
-        for j in range(len(a)):
-            single_result.append(a[j][1])
-        result.append(single_result)
+        # 生成一个和字典长度相等的向量
+        result_one = [0]*num_topics
+        # 提取第i个文档的corpus_lda
+        corpus_lda_i = corpus_lda[i]
+        for j in range(len(corpus_lda_i)):
+            # 提取该文档的第j个单词的corpus_lda
+            doc_corpus_lda = corpus_lda_i[j] # 位置0是单词在result_one中的位置，位置1是单词的tf-idf值
+            site = doc_corpus_lda[0]
+            doc_lda = doc_corpus_lda[1]
+            result_one[site] = doc_lda
+        result.append(result_one) 
     
     return result
 
@@ -147,18 +167,32 @@ def WORD2VEC_Gensim(list_result_wordcut, sg=0, vector_size=100, window=5, min_co
     return result
 
 # 生成word2vec特征向量
-def featureVec_2vec(list_result_wordcut, mv_2vecModel, method="mean"):
+def featureVec_2vec(list_result_wordcut, mv_2vecModel):
+    
+    from gensim import corpora
+    
+    dictionary = corpora.Dictionary(list_result_wordcut)
+
+    # 求每个单词的value
+    word2vec_value = []
+    for i in range(len(mv_2vecModel.vectors)):
+        word2vec_value.append(mv_2vecModel.vectors[i].mean())
+        
     result = []
     for i in range(len(list_result_wordcut)):
-        single_result = []
-        for word in list_result_wordcut[i]:
-            if method == "mean":
-                single_result.append(mv_2vecModel[word].mean())
-            elif method == "max":
-                single_result.append(mv_2vecModel[word].max())
-            elif method == "min":
-                single_result.append(mv_2vecModel[word].min())
-        result.append(single_result)
+        doc = list_result_wordcut[i]
+        result_one = [0]*len(mv_2vecModel.vectors)
+        for j in range(len(doc)):
+            # 查看文档中第j个单词在word2vec模型中的位置
+            word = doc[j]
+            site_word2vec = mv_2vecModel.key_to_index[word]
+            # 返回该单词的word2vec的value
+            value_word2vec = word2vec_value[site_word2vec]
+            # 查看该单词在dictionary中的位置
+            site_dictionary = dictionary.token2id[word]
+            # 把该单词的word2vec值放在向量的对应位置
+            result_one[site_dictionary] = value_word2vec
+        result.append(result_one)
     return result
 
 
