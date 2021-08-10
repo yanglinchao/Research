@@ -4,7 +4,7 @@ library(e1071)
 
 
 # 载入建模数据
-data_setmodel <- read.csv("tfidfwords.csv")
+data_setmodel <- read.csv("tfidf.csv")
 data_setmodel$y <- factor(data_setmodel$y)
 
 # 设置训练集与测试集
@@ -18,7 +18,7 @@ data_test <- data_setmodel[-trainSample, ]
 # 关键参数设置
 gamma = 100
 cost = 10
-type = "nu-classification" # "C-classification"和"nu-classification"适用于y为factor
+type = "C-classification" # "C-classification"和"nu-classification"适用于y为factor
 kernel = "radial" # "linear“; ”polynomial“; ”radial"; "sigmoid"
 
 # 建模
