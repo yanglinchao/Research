@@ -29,10 +29,21 @@ def checkStopwords(resultFromCut, stopwords):
     return outstr
 
 # 创建分词function
-def simpleWordCut(list_4wordcut, stopwords=False, cut_all=False, HMM=False):
+def simpleWordCut(list_4wordcut, dict=False, stopwords=False, cut_all=False, HMM=False):
     # stopwords:是否使用停用词表，默认False，如果传入停用词表，则直接使用
     # cut_all:是否使用全模式（把句子中所有可以成词的词语都扫描出来），默认False是使用精确模式（将句子最精确地切开，适合文本分析）
     # HMM：是否使用HMM模型（便于新词发现），默认False
+    
+    import jieba
+    import pandas as pd
+    
+    # 载入词典
+    if dict != False:
+        dict = pd.read_csv(dict, header=None, encoding='utf-8')
+        dict = list(dict.iloc[:, 0])
+        for doc in dict:
+            jieba.add_word(doc, freq = 200000)
+        
     result = []
     for i in range(0, len(list_4wordcut)):
         result_onecut = []
