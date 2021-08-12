@@ -16,8 +16,8 @@ data_test <- data_setmodel[-trainSample, ]
 # 建立神经网络模型
 
 # 关键参数设置
-gamma = 100
-cost = 10
+gamma = 10
+cost = 1
 type = "C-classification" # "C-classification"和"nu-classification"适用于y为factor
 kernel = "radial" # "linear“; ”polynomial“; ”radial"; "sigmoid"
 
