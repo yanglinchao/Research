@@ -16,7 +16,7 @@ data_test <- data_setmodel[-trainSample, ]
 # 建立神经网络模型
 
 # 关键参数设置
-size = 30 # 隐层神经元数量
+size = 20 # 隐层神经元数量
 maxit = 100 # 最大迭代数
 MaxNWts = 1e+06 # 最大可允许的weights个数
 # 建模
