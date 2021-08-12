@@ -10,12 +10,13 @@ import numpy as np
 exec(open(r"C:/Users/ylc/GitHub/Research/research2-21-TextMiningFault/def_byGensim.py", encoding='utf-8').read())
 
 # 导入数据
-data_tf = pd.read_csv('原始数据.csv', encoding='utf-8')
-data_tf = data_tf[['编号', '所属系统', "产品名称", "故障部位", "深层现象", "故障现象", "故障分析", "处理方式标签2"]]
-data_tf.columns = ['id', 'system', 'productname', 'faultsite', 'deepph', 'ph', 'analyze', 'handle']
+data_tf = pd.read_csv('建模数据.csv', encoding='utf-8')
+data_tf = data_tf[['编号', '所属系统', "产品名称", "故障部位", "深层现象", "故障现象", "故障分析", "处理方式标签2", "系统标签"]]
+data_tf.columns = ['id', 'system', 'productname', 'faultsite', 'deepph', 'ph', 'analyze', 'handle', 'sysnum']
 data_tf.index = pd.Series(range(0, len(data_tf)))
 data_tf['phadd'] = data_tf['ph'] + ";" + data_tf['deepph']
-# data_tf = data_tf[data_tf.handle<4]
+# data_tf = data_tf[data_tf.sysnum>2]
+data_tf = data_tf[data_tf.handle<4]
 
 
 
@@ -69,7 +70,11 @@ print(count_faultsite)
 
 # 对故障现象(ph)进行分词
 data_cut_ph = data_tf.ph
-list_result_cut_ph = simpleWordCut(pd.Series.tolist(data_cut_ph.astype(str)), stopwords=False, cut_all=False, HMM=False)
+list_result_cut_ph = simpleWordCut(pd.Series.tolist(data_cut_ph.astype(str)), 
+                                   dict = r"C:/Users/ylc/GitHub/Research/research2-21-TextMiningFault/dict_utf8.csv",
+                                   stopwords=False,
+                                   cut_all=False,
+                                   HMM=False)
 
 # 提取TF-IDF特征向量
 result_tfidf = tfidf_Gensim(list_result_cut_ph)
@@ -105,7 +110,7 @@ result_tfidfword2vec_series = pd.concat([result_tfidf_nor, result_word2vec_nor],
 # 并联加
 result_tfidfword2vec_parallel = result_tfidf_nor + result_word2vec_nor
 # 并联乘
-result_tfidfword2vec_multiply = np.multiply(result_tfidf, result_word2vec)
+result_tfidfword2vec_multiply = np.multiply(result_tfidf_nor, result_word2vec_nor)
 
 # 保存特征结果
 def df_result2data(result_data, y):
@@ -131,6 +136,14 @@ result_data_doc2vec = df_result2data(result_doc2vec, data_tf['handle'])
 result_data_tfidfword2vec_series = df_result2data(result_tfidfword2vec_series, data_tf['handle'])
 result_data_tfidfword2vec_parallel = df_result2data(result_tfidfword2vec_parallel, data_tf['handle'])
 result_data_tfidfword2vec_multiply = df_result2data(result_tfidfword2vec_multiply, data_tf['handle'])
+
+# result_data_tfidf = df_result2data(result_tfidf, data_tf['sysnum'])
+# result_data_lda = df_result2data(result_LDA, data_tf['sysnum'])
+# result_data_word2vec = df_result2data(result_word2vec, data_tf['sysnum'])
+# result_data_doc2vec = df_result2data(result_doc2vec, data_tf['sysnum'])
+# result_data_tfidfword2vec_series = df_result2data(result_tfidfword2vec_series, data_tf['sysnum'])
+# result_data_tfidfword2vec_parallel = df_result2data(result_tfidfword2vec_parallel, data_tf['sysnum'])
+# result_data_tfidfword2vec_multiply = df_result2data(result_tfidfword2vec_multiply, data_tf['sysnum'])
 
 # 输出带标签的特征矩阵
 result_data_tfidf.to_csv("tfidf.csv", index=False)
