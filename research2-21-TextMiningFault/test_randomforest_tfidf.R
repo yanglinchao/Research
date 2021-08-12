@@ -24,5 +24,3 @@ random <- randomForest(y~., data = data_train, ntree = ntree, importance = TRUE)
 # ½øĞĞÔ¤²â
 pred <- predict(random, data_test[, -1])
 table(data_test$y, pred)
-
-
