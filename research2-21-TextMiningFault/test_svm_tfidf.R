@@ -1,5 +1,6 @@
 setwd("C:/Users/ylc/GitHub/Research/research2-21-TextMiningFault")
 
+library(psych)
 library(e1071)
 
 
