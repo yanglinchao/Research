@@ -5,7 +5,7 @@ library(nnet)
 
 # 载入建模数据
 name <- "ph"
-word2vec_vector_size <- 300
+word2vec_vector_size <- 1000
 word2vec_window <- 10
 data_setmodel <- read.csv(paste("cut_word2vec_", name, "_", word2vec_vector_size, "_", word2vec_window, ".csv", sep = ""))
 data_table <- read.csv("table_system.csv")
