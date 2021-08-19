@@ -26,7 +26,7 @@ for(cirulation in 1:100){
   # 建立神经网络模型
   
   # 关键参数设置
-  size = 10 # 隐神经元数量
+  size = 30 # 隐神经元数量
   maxit = 100 # 最大迭代次数
   MaxNWts = 1000000 # 允许的最大权值个数
   
@@ -92,4 +92,4 @@ outputdata <- data.frame(num = apply(index_result, MARGIN = 2, mean),
                          window = rep(NA, 4),
                          algorithm = rep("ANN", 4),
                          size = rep(size, 4))
-write.csv(outputdata, paste(c("result_test1_ANN_", size, "_tfidf.csv"), collapse = ""), row.names = FALSE)
+write.csv(outputdata, paste(c("result_test1_ANN_", size, "_tfidf_", length, ".csv"), collapse = ""), row.names = FALSE)
