@@ -61,6 +61,8 @@ def simpleWordCut(list_4wordcut, dict=False, stopwords=False, cut_all=False, HMM
 
 # 创建tf-idf特征矩阵
 def tfidf_Gensim(list_result_wordcut):
+      
+    from gensim import corpora, models
     
     dictionary = corpora.Dictionary(list_result_wordcut)
     
