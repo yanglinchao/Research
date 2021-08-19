@@ -4,7 +4,8 @@ library(nnet)
 
 # 载入建模数据
 name <- "ph"
-data_setmodel <- read.csv(paste("cut_tfidf_", name, ".csv", sep = ""))
+length <- 1000
+data_setmodel <- read.csv(paste("cut_tfidf_", name, "_", length, ".csv", sep = ""))
 data_table_system <- read.csv("table_system.csv")
 data_table_handle <- read.csv("table_handle.csv")
 data_setmodel$y1 <- factor(data_table_system$sysnum)
@@ -12,7 +13,7 @@ data_setmodel$y2 <- factor(data_table_handle$handle)
 
 # 开始循环建模
 index_result <- data.frame(accuracy = NA, precision = NA, recall = NA, f1 = NA)
-for(cirulation in 1:50){
+for(cirulation in 1:10){
   
   # 初始时间
   t0 <- Sys.time()
