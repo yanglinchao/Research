@@ -5,7 +5,8 @@ library(e1071)
 
 # 载入建模数据
 name <- "ph"
-data_setmodel <- read.csv(paste("cut_tfidf_", name, ".csv", sep = ""))
+length <- 400
+data_setmodel <- read.csv(paste("cut_tfidf_", name, "_", length, ".csv", sep = ""))
 data_table <- read.csv("table_system.csv")
 data_setmodel$y <- factor(data_table$sysnum)
 
@@ -90,4 +91,4 @@ outputdata <- data.frame(num = apply(index_result, MARGIN = 2, mean),
                          window = rep(NA, 4),
                          algorithm = rep("SVM", 4),
                          gammacost = rep(paste(c(gamma, cost), collapse = "_"), 4))
-write.csv(outputdata, paste(c("result_test1_SVM_", gamma, "_", cost, "_tfidf.csv"), collapse = ""), row.names = FALSE)
+write.csv(outputdata, paste(c("result_test1_SVM_", gamma, "_", cost, "_tfidf_", length, ".csv"), collapse = ""), row.names = FALSE)
