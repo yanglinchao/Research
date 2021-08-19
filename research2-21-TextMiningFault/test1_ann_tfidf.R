@@ -5,7 +5,8 @@ library(nnet)
 
 # 载入建模数据
 name <- "ph"
-data_setmodel <- read.csv(paste("cut_tfidf_", name, ".csv", sep = ""))
+length <- 1000
+data_setmodel <- read.csv(paste("cut_tfidf_", name, "_", length, ".csv", sep = ""))
 data_table <- read.csv("table_system.csv")
 data_setmodel$y <- factor(data_table$sysnum)
 
@@ -25,7 +26,7 @@ for(cirulation in 1:100){
   # 建立神经网络模型
   
   # 关键参数设置
-  size = 30 # 隐神经元数量
+  size = 10 # 隐神经元数量
   maxit = 100 # 最大迭代次数
   MaxNWts = 1000000 # 允许的最大权值个数
   
