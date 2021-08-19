@@ -179,31 +179,23 @@ def WORD2VEC_Gensim(list_result_wordcut, sg=0, vector_size=100, window=5, min_co
 
 # 生成word2vec特征向量
 def featureVec_2vec(list_result_wordcut, mv_2vecModel):
-    
-    from gensim import corpora
-    
-    dictionary = corpora.Dictionary(list_result_wordcut)
 
-    # 求每个单词的value
-    word2vec_value = []
-    for i in range(len(mv_2vecModel.vectors)):
-        word2vec_value.append(mv_2vecModel.vectors[i].mean())
+    from gensim import corpora
         
     result = []
     for i in range(len(list_result_wordcut)):
+        # 提取第i个文档
         doc = list_result_wordcut[i]
-        result_one = [0]*len(mv_2vecModel.vectors)
+        # 提取第i个文档的所有词向量
+        ist_all_wordvec = []
         for j in range(len(doc)):
-            # 查看文档中第j个单词在word2vec模型中的位置
-            word = doc[j]
-            site_word2vec = mv_2vecModel.key_to_index[word]
-            # 返回该单词的word2vec的value
-            value_word2vec = word2vec_value[site_word2vec]
-            # 查看该单词在dictionary中的位置
-            site_dictionary = dictionary.token2id[word]
-            # 把该单词的word2vec值放在向量的对应位置
-            result_one[site_dictionary] = value_word2vec
-        result.append(result_one)
+            # 提取第j个词语的词向量
+            wordvec = mv_2vecModel[doc[j]]
+            ist_all_wordvec.append(wordvec)
+        docvec = np.array([0]*len(ist_all_wordvec[0]))
+        for g in range(len(ist_all_wordvec)):
+            docvec = docvec+ist_all_wordvec[g]
+        result.append(docvec)        
     return result
 
 
