@@ -1,0 +1,140 @@
+
+library(ggplot2)
+library(dplyr)
+
+
+
+windowsFonts(RMN = windowsFont("Times New Roman"))
+mycolors <- c("#F8766D", "#00BA38", "#619CFF")
+
+
+
+# load("C:/Users/ylc/jgy/research/16-CIPCABPNN/test/result/CIPCA-NF/resultH10FNIPCA.RData")
+# load("C:/Users/ylc/jgy/research/16-CIPCABPNN/test/result/CIPCA-NF/resultH15FNIPCA.RData")
+# load("C:/Users/ylc/jgy/research/16-CIPCABPNN/test/result/CIPCA-NF/resultH20FNIPCA.RData")
+# load("C:/Users/ylc/jgy/research/16-CIPCABPNN/test/result/CIPCA-NF/resultH25FNIPCA.RData")
+# load("C:/Users/ylc/jgy/research/16-CIPCABPNN/test/result/CIPCA-NF/resultH30FNIPCA.RData")
+# load("C:/Users/ylc/jgy/research/16-CIPCABPNN/test/result/CIPCA-NF/resultH35FNIPCA.RData")
+# load("C:/Users/ylc/jgy/research/16-CIPCABPNN/test/result/CIPCA-NF/resultH40FNIPCA.RData")
+# load("C:/Users/ylc/jgy/research/16-CIPCABPNN/test/result/CIPCA-NF/resultH45FNIPCA.RData")
+# 
+# functionResultByTime <- function(List, t=1){
+#   
+#   library(dplyr)
+#   
+#   dataResults <- List[[1]]
+#   for(i in 2:length(List)){
+#     dataResults <- rbind(dataResults, List[[i]])
+#   }
+#   dataResults$ResultEnsemble <- round(dataResults$ResultEnsemble)
+#   dataResults$ResultEnsemble[which(dataResults$ResultEnsemble < 0)] <- 0
+#   dataResults$ResultEnsemble[which(dataResults$ResultEnsemble > 1)] <- 1
+#   
+#   dataResults$Time <- as.numeric(dataResults$Time)
+#   dataResults <- dataResults[order(dataResults$Time), ]
+#   names(dataResults) <- c("pre", "true", "time")
+#   
+#   n <- ceiling(max(dataResults$time)/(t*1000))
+#   acc <- c()
+#   pre <- c()
+#   rec <- c()
+#   time <- c()
+#   for(i in 1:n){
+#     
+#     raw <- which((dataResults$time > (i-1)*t*1000) & (dataResults$time <= i*t*1000))
+#     data <- dataResults[raw, ]
+#     data.table <- data.frame(table(data$pre, data$true))
+#     data.table <- tbl_df(data.table)
+#     names(data.table) <- c("pre", "true", "n")
+#     
+#     tp <- as.numeric(data.table%>%filter((pre==1)&(true==1))%>%select(n))
+#     tn <- as.numeric(data.table%>%filter((pre==1)&(true==0))%>%select(n))
+#     fp <- as.numeric(data.table%>%filter((pre==0)&(true==1))%>%select(n))
+#     fn <- as.numeric(data.table%>%filter((pre==0)&(true==0))%>%select(n))
+#     
+#     if(is.na(tp)){tp<-0}
+#     if(is.na(tn)){tn<-0}
+#     if(is.na(fp)){fp<-0}
+#     if(is.na(tn)){tn<-0}
+#     
+#     
+#     acc[i] <- (tp+fn)/sum(data.table$n)
+#     pre[i] <- tp/(tp+tn)
+#     rec[i] <- tp/(tp+fp)
+#     time[i] <- (i-1)*t
+#     
+#   }
+#   result <- data.frame(acc = acc, pre = pre, rec = rec, time = time)
+#   return(result)
+# }
+# 
+# functionTimeData <- function(data){
+#   
+#   dataR <- data.frame(value = c(data$acc, data$pre, data$rec),
+#                       time = c(data$time, data$time, data$time),
+#                       Index = rep(c("Accuracy", "Precision", "Recall"), each = nrow(data)))
+#   
+#   return(dataR)
+#   
+# }
+# 
+# dataResultsH10 <- functionResultByTime(listH10FNResult, t=1)
+# dataH10 <- functionTimeData(dataResultsH10)
+# dataResultsH15 <- functionResultByTime(listH15FNResult, t=1)
+# dataH15 <- functionTimeData(dataResultsH15)
+# dataResultsH20 <- functionResultByTime(listH20FNResult, t=1)
+# dataH20 <- functionTimeData(dataResultsH20)
+# dataResultsH25 <- functionResultByTime(listH25FNResult, t=1)
+# dataH25 <- functionTimeData(dataResultsH25)
+# dataResultsH30 <- functionResultByTime(listH30FNResult, t=1)
+# dataH30 <- functionTimeData(dataResultsH30)
+# dataResultsH35 <- functionResultByTime(listH35FNResult, t=1)
+# dataH35 <- functionTimeData(dataResultsH35)
+# dataResultsH40 <- functionResultByTime(listH40FNResult, t=1)
+# dataH40 <- functionTimeData(dataResultsH40)
+# dataResultsH45 <- functionResultByTime(listH45FNResult, t=1)
+# dataH45 <- functionTimeData(dataResultsH45)
+# data.Index.byTime <- rbind(dataH10, dataH15, dataH20, dataH25, dataH30, dataH35, dataH40, dataH45)
+
+data.Index.byTime <- read.csv("C:/Users/ylc/jgy/research/16-CIPCABPNN/test/resultBytimeCIPCAFN")
+
+data.Index.byTime$Neurons <- rep(c("隐神经元数量:10",
+                                   "隐神经元数量:15",
+                                   "隐神经元数量:20",
+                                   "隐神经元数量:25",
+                                   "隐神经元数量:30",
+                                   "隐神经元数量:35",
+                                   "隐神经元数量:40",
+                                   "隐神经元数量:45"),
+                                 each = 30*3)
+data.Index.byTime$Neurons <- factor(data.Index.byTime$Neurons,
+                                    levels = c("隐神经元数量:10",
+                                               "隐神经元数量:15",
+                                               "隐神经元数量:20",
+                                               "隐神经元数量:25",
+                                               "隐神经元数量:30",
+                                               "隐神经元数量:35",
+                                               "隐神经元数量:40",
+                                               "隐神经元数量:45"),
+                                    ordered = TRUE)
+data.Index.byTime$Index <- factor(data.Index.byTime$Index, levels = c("Accuracy", "Precision", "Recall"), ordered = TRUE)
+data.Index.byTime$time <- factor(data.Index.byTime$time, levels = c(29:0), ordered = TRUE)
+
+
+gpline.IndexByTime <- ggplot(data = data.Index.byTime, aes(x = time, y = value, group = Index, color = Index)) +
+  geom_line(size = 2) +
+  geom_point(size = 5) +
+  facet_wrap(.~Neurons, nrow = 4) +
+  scale_x_discrete(breaks = seq(from=1, to=29,by=2)) +
+  scale_color_manual(name = "Index:", values = mycolors) +
+  labs(x = "风险发生前时刻（秒）", y = "指标值") +
+  theme(axis.title.x = element_text(family = "RMN", size = 25),
+        axis.text.x = element_text(family = "RMN", size = 25),
+        axis.title.y = element_text(family = "RMN", size = 25),
+        axis.text.y = element_text(family = "RMN", size = 25),
+        strip.text = element_text(family = "RMN", size = 25),
+        legend.title = element_text(family = "RMN", size = 25),
+        legend.text = element_text(family = "RMN", size = 25),
+        legend.position = "bottom")
+gpline.IndexByTime
+ggsave(gpline.IndexByTime, filename = "C:/Users/ylc/Desktop/分时段故障预测指标.tiff", dpi = 600, width = 12, height = 15)
