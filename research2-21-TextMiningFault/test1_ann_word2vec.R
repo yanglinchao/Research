@@ -5,7 +5,7 @@ library(nnet)
 
 # 载入建模数据
 name <- "ph"
-word2vec_vector_size <- 1000
+word2vec_vector_size <- 900
 word2vec_window <- 10
 data_setmodel <- read.csv(paste("cut_word2vec_", name, "_", word2vec_vector_size, "_", word2vec_window, ".csv", sep = ""))
 data_table <- read.csv("table_system.csv")
@@ -13,7 +13,7 @@ data_setmodel$y <- factor(data_table$sysnum)
 
 # 开始循环建模
 index_result <- data.frame(accuracy=NA, precision=NA, recall=NA, f1=NA)
-for(cirulation in 1:100){
+for(cirulation in 99:99){
   
   # 初始时间
   t0 <- Sys.time()
@@ -27,7 +27,7 @@ for(cirulation in 1:100){
   # 建立神经网络模型
   
   # 关键参数设置
-  size = 20 # 隐神经元数量
+  size = 10 # 隐神经元数量
   maxit = 100 # 最大迭代次数
   MaxNWts = 1000000 # 允许的最大权值个数
   
@@ -84,7 +84,7 @@ for(cirulation in 1:100){
 index_result[is.na(index_result)] <- 0
 index_result <- index_result[-1, ]
 apply(index_result, MARGIN = 2, mean)
-
+# write.csv(index_result, "test1_ann_word2vec.csv", row.names = FALSE)
 # 输出最终结果
 outputdata <- data.frame(num = apply(index_result, MARGIN = 2, mean),
                          index = c("Accuracy", "Precision", "Recall", "F1-Score"),
