@@ -1,19 +1,27 @@
 setwd("C:/Users/ylc/GitHub/Research/research2-21-TextMiningFault")
 
-library(nnet)
+library(e1071)
 
 
 # 载入建模数据
 name <- "ph"
-word2vec_vector_size <- 900
+n <- 900
+
+# 载入tfidf
+length <- n
+data_setmodel1 <- read.csv(paste("cut_tfidf_", name, "_", length, ".csv", sep = ""))
+# 载入word2vec
+word2vec_vector_size <- n
 word2vec_window <- 10
-data_setmodel <- read.csv(paste("cut_word2vec_", name, "_", word2vec_vector_size, "_", word2vec_window, ".csv", sep = ""))
+data_setmodel2 <- read.csv(paste("cut_word2vec_", name, "_", word2vec_vector_size, "_", word2vec_window, ".csv", sep = ""))
+# 合并
+data_setmodel <- data_setmodel1+data_setmodel2
 data_table <- read.csv("table_system.csv")
 data_setmodel$y <- factor(data_table$sysnum)
 
 # 开始循环建模
 index_result <- data.frame(accuracy=NA, precision=NA, recall=NA, f1=NA)
-for(cirulation in 99:99){
+for(cirulation in 1:2){
   
   # 初始时间
   t0 <- Sys.time()
@@ -24,15 +32,14 @@ for(cirulation in 99:99){
   data_train <- data_setmodel[trainSample, ]
   data_test <- data_setmodel[-trainSample, ]
   
-  # 建立神经网络模型
-  
   # 关键参数设置
-  size = 10 # 隐神经元数量
-  maxit = 100 # 最大迭代次数
-  MaxNWts = 1000000 # 允许的最大权值个数
+  gamma = 50
+  cost = 10
+  type = "C-classification" # "C-classification"和"nu-classification"适用于y为factor
+  kernel = "radial" # "linear“; ”polynomial“; ”radial"; "sigmoid"
   
   # 建模
-  ann <- nnet(y~., data = data_train, size = size, maxit = maxit, MaxNWts = MaxNWts)
+  svm <- svm(y~., data = data_train, type = type, kernel = kernel, cost = cost, gamma = gamma, scale = FALSE)
   
   # 多分类指标计算
   df_multiIndex <- function(true, pred){
@@ -70,7 +77,7 @@ for(cirulation in 99:99){
   }
   
   # 进行预测
-  pred <- predict(ann, subset(data_test, select = -c(y)), type = "class")
+  pred <- predict(svm, data_test[, -ncol(data_test)])
   index <- df_multiIndex(true = data_test$y, pred = pred)
   index_result <- rbind(index_result, index)
   
@@ -84,13 +91,15 @@ for(cirulation in 99:99){
 index_result[is.na(index_result)] <- 0
 index_result <- index_result[-1, ]
 apply(index_result, MARGIN = 2, mean)
-# write.csv(index_result, "test1_ann_word2vec.csv", row.names = FALSE)
+
+
 # 输出最终结果
 outputdata <- data.frame(num = apply(index_result, MARGIN = 2, mean),
                          index = c("Accuracy", "Precision", "Recall", "F1-Score"),
                          cut = rep("word2vec", 4),
                          vectorsize = rep(word2vec_vector_size, 4),
                          window = rep(word2vec_window, 4),
-                         algorithm = rep("ANN", 4),
-                         size = rep(size, 4))
-write.csv(outputdata, paste(c("result_test1_ANN_", size, "_word2vec_", "_", word2vec_vector_size, "_", word2vec_window, ".csv"), collapse = ""), row.names = FALSE)
+                         algorithm = rep("SVM", 4),
+                         gammacost = rep(paste(c(gamma, cost), collapse = "_"), 4))
+write.csv(outputdata, paste(c("result_test1_SVM_", gamma, "_", cost, "_word2vec_", word2vec_vector_size, "_", word2vec_window, ".csv"), collapse = ""), row.names = FALSE)
+

@@ -1,16 +1,15 @@
 setwd("C:/Users/ylc/GitHub/Research/research2-21-TextMiningFault")
 
-library(nnet)
+library(e1071)
+
 
 # 载入建模数据
 name <- "ph"
-word2vec_vector_size <- 200
+word2vec_vector_size <- 300
 word2vec_window <- 10
 data_setmodel <- read.csv(paste("cut_word2vec_", name, "_", word2vec_vector_size, "_", word2vec_window, ".csv", sep = ""))
-data_table_system <- read.csv("table_system.csv")
-data_table_handle <- read.csv("table_handle.csv")
-data_setmodel$y1 <- factor(data_table_system$sysnum)
-data_setmodel$y2 <- factor(data_table_handle$handle)
+data_table <- read.csv("table_system.csv")
+data_setmodel$y <- factor(data_table$sysnum)
 
 # 开始循环建模
 index_result <- data.frame(accuracy=NA, precision=NA, recall=NA, f1=NA)
@@ -26,9 +25,10 @@ for(cirulation in 1:10){
   data_test <- data_setmodel[-trainSample, ]
   
   # 关键参数设置
-  size = 20 # 隐神经元数量
-  maxit = 100 # 最大迭代次数
-  MaxNWts = 1000000 # 允许的最大权值个数
+  gamma = 150
+  cost = 30
+  type = "C-classification" # "C-classification"和"nu-classification"适用于y为factor
+  kernel = "radial" # "linear“; ”polynomial“; ”radial"; "sigmoid"
   
   # 建立处理方式模型
   ANNhandle <- nnet(y2~., data = subset(data_train, select = -c(y1)), size = size, maxit = maxit, MaxNWts = MaxNWts)

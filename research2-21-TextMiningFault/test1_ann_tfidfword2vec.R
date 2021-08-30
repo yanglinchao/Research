@@ -5,16 +5,24 @@ library(nnet)
 
 # 载入建模数据
 name <- "ph"
-word2vec_vector_size <- 900
+length <- 1000
 word2vec_window <- 10
-data_setmodel <- read.csv(paste("cut_word2vec_", name, "_", word2vec_vector_size, "_", word2vec_window, ".csv", sep = ""))
+data_setmodel1 <- read.csv(paste("cut_tfidf_", name, "_", length, ".csv", sep = ""))
+data_setmodel2 <- read.csv(paste("cut_word2vec_", name, "_", length, "_", word2vec_window, ".csv", sep = ""))
+data_setmodel1 <- data.frame(scale(data_setmodel1))
+data_setmodel2 <- data.frame(scale(data_setmodel2))
+
+data_setmodel <- cbind(data_setmodel1, data_setmodel2)
+names(data_setmodel) <- paste(rep("X", ncol(data_setmodel)), seq(0, ncol(data_setmodel)-1, 1), sep = "")
+
+
 data_table <- read.csv("table_system.csv")
 data_setmodel$y <- factor(data_table$sysnum)
 
 # 开始循环建模
 index_result <- data.frame(accuracy=NA, precision=NA, recall=NA, f1=NA)
-for(cirulation in 99:99){
-  
+for(cirulation in 1:100){
+
   # 初始时间
   t0 <- Sys.time()
   
@@ -84,13 +92,14 @@ for(cirulation in 99:99){
 index_result[is.na(index_result)] <- 0
 index_result <- index_result[-1, ]
 apply(index_result, MARGIN = 2, mean)
-# write.csv(index_result, "test1_ann_word2vec.csv", row.names = FALSE)
-# 输出最终结果
-outputdata <- data.frame(num = apply(index_result, MARGIN = 2, mean),
-                         index = c("Accuracy", "Precision", "Recall", "F1-Score"),
-                         cut = rep("word2vec", 4),
-                         vectorsize = rep(word2vec_vector_size, 4),
-                         window = rep(word2vec_window, 4),
-                         algorithm = rep("ANN", 4),
-                         size = rep(size, 4))
-write.csv(outputdata, paste(c("result_test1_ANN_", size, "_word2vec_", "_", word2vec_vector_size, "_", word2vec_window, ".csv"), collapse = ""), row.names = FALSE)
+write.csv(index_result, "test1_ann_tfidfword2vec.csv", row.names = FALSE)
+# # 输出最终结果
+# outputdata <- data.frame(num = apply(index_result, MARGIN = 2, mean),
+#                          index = c("Accuracy", "Precision", "Recall", "F1-Score"),
+#                          cut = rep("TF-IDF", 4),
+#                          vectorsize = rep(ncol(data_setmodel)-1, 4),
+#                          window = rep(NA, 4),
+#                          algorithm = rep("ANN", 4),
+#                          size = rep(size, 4))
+# write.csv(outputdata, paste(c("result_test1_ANN_", size, "_tfidfword2vec_", length, ".csv"), collapse = ""), row.names = FALSE)
+
