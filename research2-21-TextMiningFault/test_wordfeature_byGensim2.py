@@ -24,7 +24,7 @@ data_tf = data_tf[data_tf.handle<4]
 variable = "ph"
 
 # 参数选择
-length = 100
+length = 400
 LDA_num_topics = 400
 word2vec_vector_size = 400
 doc2vec_vector_size = 400
