@@ -14,6 +14,11 @@ for(k in seq(100, 1000, 100)){
   data_setmodel$y1 <- factor(data_table_system$sysnum)
   data_setmodel$y2 <- factor(data_table_handle$handle)
   
+  data_setmodel2 <- read.csv(paste("cut_word2vec_", name, "_", "900", "_", word2vec_window, ".csv", sep = ""))
+  data_setmodel2$y1 <- factor(data_table_system$sysnum)
+  data_setmodel2$y2 <- factor(data_table_handle$handle)
+  
+  
   # 开始循环建模
   index_result <- data.frame(accuracy = NA, precision = NA, recall = NA, f1 = NA)
   for(cirulation in 1:100){
@@ -26,6 +31,8 @@ for(k in seq(100, 1000, 100)){
     trainSample <- sample(x = c(1:nrow(data_setmodel)), size = trunc(nrow(data_setmodel)*(2/3)), replace = FALSE)
     data_train <- data_setmodel[trainSample, ]
     data_test <- data_setmodel[-trainSample, ]
+    data_train2 <- data_setmodel2[trainSample, ]
+    data_test2 <- data_setmodel2[-trainSample, ]
     
     # 关键参数设置
     gamma = 20
@@ -56,19 +63,19 @@ for(k in seq(100, 1000, 100)){
       return(result)
     }
     # 打标签
-    data_train <- def_Tag(data_train, data_train$y1)
+    data_train2 <- def_Tag(data_train2, data_train2$y1)
     
     # 建立处理方式模型，此时的训练集包含打入的故障定位标签
-    SVMhandle <- svm(y2~., data = subset(data_train, select = -c(y1)), type = type, kernel = kernel, cost = cost, gamma = gamma, scale = FALSE)
+    SVMhandle <- svm(y2~., data = subset(data_train2, select = -c(y1)), type = type, kernel = kernel, cost = cost, gamma = gamma, scale = FALSE)
     
     # 对测试集的故障部位进行预测
     predsite <- predict(SVMsystem, subset(data_test, select = -c(y1, y2)), type = "class")
     
     # 根据预测的故障部位给测试集打上标签
-    data_test <- def_Tag(data_test, predsite)
+    data_test2 <- def_Tag(data_test2, predsite)
     
     # 对测试集的处理方式进行预测
-    pred <- predict(SVMhandle, subset(data_test, select = -c(y1, y2)), type = "class")
+    pred <- predict(SVMhandle, subset(data_test2, select = -c(y1, y2)), type = "class")
     
     # 计算分类效果指标
     # 多分类指标计算
@@ -106,7 +113,7 @@ for(k in seq(100, 1000, 100)){
       return(result)
     }
     # 计算
-    index <- df_multiIndex(data_test$y2, pred)
+    index <- df_multiIndex(data_test2$y2, pred)
     # 保存
     index_result <- rbind(index_result, index)
     
