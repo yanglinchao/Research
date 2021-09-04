@@ -34,7 +34,7 @@ bar_3modelvs <- ggplot(data = data_result_handle_svm,
         legend.text = element_text(family = "RMN", size = 28),
         legend.position = "bottom")
 bar_3modelvs
-ggsave(bar_3modelvs, filename = "C:/Users/ylc/Desktop/故障处理方式三个模型对比.tiff", dpi = 600, height = 22, width = 16)
+# ggsave(bar_3modelvs, filename = "C:/Users/ylc/Desktop/故障处理方式三个模型对比.tiff", dpi = 600, height = 22, width = 16)
 
 
 
