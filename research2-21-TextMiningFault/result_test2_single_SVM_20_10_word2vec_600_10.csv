@@ -1,5 +1,0 @@
-"num","index","cut","vectorsize","window","algorithm","gammacost"
-0.772941176470588,"Accuracy","word2vec",600,10,"SVM","20_10"
-0.790346547518769,"Precision","word2vec",600,10,"SVM","20_10"
-0.757676805862935,"Recall","word2vec",600,10,"SVM","20_10"
-0.7658743283429,"F1-Score","word2vec",600,10,"SVM","20_10"
