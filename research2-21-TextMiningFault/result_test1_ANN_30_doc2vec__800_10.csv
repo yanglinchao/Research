@@ -1,5 +1,0 @@
-"num","index","cut","vectorsize","window","algorithm","size"
-0.276018099547511,"Accuracy","doc2vec",800,10,"ANN",30
-0.235885366605829,"Precision","doc2vec",800,10,"ANN",30
-0.2439033988305,"Recall","doc2vec",800,10,"ANN",30
-0.233572765945281,"F1-Score","doc2vec",800,10,"ANN",30
