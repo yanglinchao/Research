@@ -1,0 +1,5 @@
+result,index,cut_type,vectorsize,algorithm,paramter,type,k
+0.900452489,Accuracy,Word2Vec,300,SVM,20_10,goal,772
+0.899398574,Precision,Word2Vec,300,SVM,20_10,goal,772
+0.898433048,Recall,Word2Vec,300,SVM,20_10,goal,772
+0.898556528,F1-Score,Word2Vec,300,SVM,20_10,goal,772
