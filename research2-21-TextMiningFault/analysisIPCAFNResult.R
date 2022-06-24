@@ -41,8 +41,9 @@ gpIPCAaccbyGroupFN <- ggplot(data = dataIPCAIndexbyGroupFN %>% filter(Index=="Ac
   labs(x = "隐神经元数量", y = "Accuracy") +
   scale_x_continuous(breaks = c(10, 15, 20, 25, 30, 35, 40, 45)) +
   scale_y_continuous(breaks = c(0, 0.25, 0.50, 0.75, 1),
-                     labels = c(0, 0.25, 0.50, 0.75, 1),
+                     labels = c(0, "25%", "50%", "75%", "100%"),
                      limits = c(0, 1)) +
+  labs(y = "准确率") +
   theme(axis.title.x = element_text(family = "RMN", size = 28),
         axis.text.x = element_text(family = "RMN", size = 28),
         axis.title.y = element_text(family = "RMN", size = 28),
@@ -60,8 +61,9 @@ gpIPCAprebyGroupFN <- ggplot(data = dataIPCAIndexbyGroupFN %>% filter(Index=="Pr
   labs(x = "隐神经元数量", y = "Precision") +
   scale_x_continuous(breaks = c(10, 15, 20, 25, 30, 35, 40, 45)) +
   scale_y_continuous(breaks = c(0, 0.25, 0.50, 0.75, 1),
-                     labels = c(0, 0.25, 0.50, 0.75, 1),
+                     labels = c(0, "25%", "50%", "75%", "100%"),
                      limits = c(0, 1)) +
+  labs(y = "精确率") + 
   theme(axis.title.x = element_text(family = "RMN", size = 28),
         axis.text.x = element_text(family = "RMN", size = 28),
         axis.title.y = element_text(family = "RMN", size = 28),
@@ -80,8 +82,9 @@ gpIPCArecbyGroupFN <- ggplot(data = dataIPCAIndexbyGroupFN %>% filter(Index=="Re
   labs(x = "隐神经元数量", y = "Recall") +
   scale_x_continuous(breaks = c(10, 15, 20, 25, 30, 35, 40, 45)) +
   scale_y_continuous(breaks = c(0, 0.25, 0.50, 0.75, 1),
-                     labels = c(0, 0.25, 0.50, 0.75, 1),
+                     labels = c(0, "25%", "50%", "75%", "100%"),
                      limits = c(0, 1)) +
+  labs(y = "召回率") +
   theme(axis.title.x = element_text(family = "RMN", size = 28),
         axis.text.x = element_text(family = "RMN", size = 28),
         axis.title.y = element_text(family = "RMN", size = 28),
@@ -145,10 +148,10 @@ dataIndexCompare$Type <- factor(dataIndexCompare$Type, levels = c("PCA", "IPCA")
 gpCompareaccFN <- ggplot(data = dataIndexCompare%>%filter(Index=="Accuracy"), aes(x = Neurons, y = mean, fill = Type)) +
   geom_bar(stat = "identity", position = "dodge") +
   scale_fill_discrete(name = "模型:", breaks = c("PCA", "IPCA"), labels = c("PCA-BPNN", "CIPCA-BPNN")) +
-  labs(x = "隐神经元数量", y = "Accuracy") +
+  labs(x = "隐神经元数量", y = "准确率") +
   scale_x_continuous(breaks = c(10, 15, 20, 25, 30, 35, 40, 45)) +
   scale_y_continuous(breaks = c(0, 0.25, 0.50, 0.75, 1),
-                     labels = c(0, 0.25, 0.50, 0.75, 1),
+                     labels = c(0, "25%", "50%", "75%", "100%"),
                      limits = c(0, 1)) +
   theme(axis.title.x = element_text(family = "RMN", size = 28),
         axis.text.x = element_text(family = "RMN", size = 28),
@@ -164,10 +167,10 @@ ggsave(gpCompareaccFN, filename = "C:/Users/ylc/Desktop/CIPCA和PCA故障预测ACC.ti
 gpComparepreFN <- ggplot(data = dataIndexCompare%>%filter(Index=="Precision"), aes(x = Neurons, y = mean, fill = Type)) +
   geom_bar(stat = "identity", position = "dodge") +
   scale_fill_discrete(name = "模型:", breaks = c("PCA", "IPCA"), labels = c("PCA-BPNN", "CIPCA-BPNN")) +
-  labs(x = "隐神经元数量", y = "Precision") +
+  labs(x = "隐神经元数量", y = "精确率") +
   scale_x_continuous(breaks = c(10, 15, 20, 25, 30, 35, 40, 45)) +
   scale_y_continuous(breaks = c(0, 0.25, 0.50, 0.75, 1),
-                     labels = c(0, 0.25, 0.50, 0.75, 1),
+                     labels = c(0, "25%", "50%", "75%", "100%"),
                      limits = c(0, 1)) +
   theme(axis.title.x = element_text(family = "RMN", size = 28),
         axis.text.x = element_text(family = "RMN", size = 28),
@@ -183,10 +186,10 @@ ggsave(gpComparepreFN, filename = "C:/Users/ylc/Desktop/CIPCA和PCA故障预测PRE.ti
 gpComparerecFN <- ggplot(data = dataIndexCompare%>%filter(Index=="Recall"), aes(x = Neurons, y = mean, fill = Type)) +
   geom_bar(stat = "identity", position = "dodge") +
   scale_fill_discrete(name = "模型:", breaks = c("PCA", "IPCA"), labels = c("PCA-BPNN", "CIPCA-BPNN")) +
-  labs(x = "隐神经元数量", y = "Recall") +
+  labs(x = "隐神经元数量", y = "召回率") +
   scale_x_continuous(breaks = c(10, 15, 20, 25, 30, 35, 40, 45)) +
   scale_y_continuous(breaks = c(0, 0.25, 0.50, 0.75, 1),
-                     labels = c(0, 0.25, 0.50, 0.75, 1),
+                     labels = c(0, "25%", "50%", "75%", "100%"),
                      limits = c(0, 1)) +
   theme(axis.title.x = element_text(family = "RMN", size = 28),
         axis.text.x = element_text(family = "RMN", size = 28),
