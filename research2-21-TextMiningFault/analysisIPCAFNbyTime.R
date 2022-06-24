@@ -96,7 +96,7 @@ mycolors <- c("#F8766D", "#00BA38", "#619CFF")
 # dataH45 <- functionTimeData(dataResultsH45)
 # data.Index.byTime <- rbind(dataH10, dataH15, dataH20, dataH25, dataH30, dataH35, dataH40, dataH45)
 
-data.Index.byTime <- read.csv("C:/Users/ylc/jgy/research/16-CIPCABPNN/test/resultBytimeCIPCAFN")
+data.Index.byTime <- read.csv("C:/Users/ylc/jgy/research/16-CIPCABPNN/test/resultBytimeCIPCAFN.csv")
 
 data.Index.byTime$Neurons <- rep(c("隐神经元数量:10",
                                    "隐神经元数量:15",
@@ -117,7 +117,10 @@ data.Index.byTime$Neurons <- factor(data.Index.byTime$Neurons,
                                                "隐神经元数量:40",
                                                "隐神经元数量:45"),
                                     ordered = TRUE)
-data.Index.byTime$Index <- factor(data.Index.byTime$Index, levels = c("Accuracy", "Precision", "Recall"), ordered = TRUE)
+data.Index.byTime$Index <- factor(data.Index.byTime$Index,
+                                  levels = c("Accuracy", "Precision", "Recall"),
+                                  labels = c("准确率", "精确率", "召回率"),
+                                  ordered = TRUE)
 data.Index.byTime$time <- factor(data.Index.byTime$time, levels = c(29:0), ordered = TRUE)
 
 
@@ -126,6 +129,9 @@ gpline.IndexByTime <- ggplot(data = data.Index.byTime, aes(x = time, y = value, 
   geom_point(size = 5) +
   facet_wrap(.~Neurons, nrow = 4) +
   scale_x_discrete(breaks = seq(from=1, to=29,by=2)) +
+  scale_y_continuous(limits = c(0.6, 1),
+                     breaks = c(0.6, 0.8, 1),
+                     labels = c("60%", "80%", "100%")) +
   scale_color_manual(name = "Index:", values = mycolors) +
   labs(x = "风险发生前时刻（秒）", y = "指标值") +
   theme(axis.title.x = element_text(family = "RMN", size = 25),
@@ -137,4 +143,4 @@ gpline.IndexByTime <- ggplot(data = data.Index.byTime, aes(x = time, y = value, 
         legend.text = element_text(family = "RMN", size = 25),
         legend.position = "bottom")
 gpline.IndexByTime
-ggsave(gpline.IndexByTime, filename = "C:/Users/ylc/Desktop/分时段故障预测指标.tiff", dpi = 600, width = 12, height = 15)
+# ggsave(gpline.IndexByTime, filename = "C:/Users/ylc/Desktop/分时段故障预测指标.tiff", dpi = 600, width = 12, height = 15)
