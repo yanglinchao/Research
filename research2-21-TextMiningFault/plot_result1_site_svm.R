@@ -7,7 +7,10 @@ windowsFonts(RMN = windowsFont("Times New Roman"))
 data_result_site <- read.csv("result_test1_site.csv")
 
 data_result_site <- as_tibble(data_result_site)
-data_result_site$index <- factor(data_result_site$index, levels = c("Accuracy", "Precision", "Recall", "F1-Score"), ordered = TRUE)
+data_result_site$index <- factor(data_result_site$index,
+                                 levels = c("Accuracy", "Precision", "Recall", "F1-Score"),
+                                 labels = c("准确率", "精确率", "召回率", "F1分数"),
+                                 ordered = TRUE)
 names(data_result_site)
 
 # 提取SVM数据
@@ -18,17 +21,19 @@ data_svm <- data_result_site %>% filter(algorithm=="SVM") %>% filter(paramter ==
 data_svm_word2vec <- data_svm %>% filter(cut_type == "Word2Vec")
 data_svm_word2vec_min <- min(data_svm_word2vec$result)
 data_svm_word2vec_max <- max(data_svm_word2vec$result)
-label = round(seq(data_svm_word2vec_min, data_svm_word2vec_max, (data_svm_word2vec_max-data_svm_word2vec_min)/5), 3)
+breaks = round(seq(data_svm_word2vec_min, data_svm_word2vec_max, (data_svm_word2vec_max-data_svm_word2vec_min)/5), 3)
+labels = paste(breaks*100, "%", sep = "")
+labels[2] <- "82.0%"
 line_svm_word2vec <- ggplot() +
   geom_point(data = data_svm_word2vec, aes(x = vectorsize, y = result, shape = index), size = 4) +
-  geom_line(data = data_svm_word2vec %>% filter(index == "Accuracy"), aes(x = vectorsize, y = result), size = 1.3) +
-  geom_line(data = data_svm_word2vec %>% filter(index == "Precision"), aes(x = vectorsize, y = result), size = 1.3) +
-  geom_line(data = data_svm_word2vec %>% filter(index == "Recall"), aes(x = vectorsize, y = result), size = 1.3) +
-  geom_line(data = data_svm_word2vec %>% filter(index == "F1-Score"), aes(x = vectorsize, y = result), size = 1.3) +
+  geom_line(data = data_svm_word2vec %>% filter(index == "准确率"), aes(x = vectorsize, y = result), size = 1.3) +
+  geom_line(data = data_svm_word2vec %>% filter(index == "精确率"), aes(x = vectorsize, y = result), size = 1.3) +
+  geom_line(data = data_svm_word2vec %>% filter(index == "召回率"), aes(x = vectorsize, y = result), size = 1.3) +
+  geom_line(data = data_svm_word2vec %>% filter(index == "F1分数"), aes(x = vectorsize, y = result), size = 1.3) +
   scale_x_continuous(breaks = seq(100, 1000, 100)) +
   scale_y_continuous(limits = c(data_svm_word2vec_min, data_svm_word2vec_max),
-                     breaks = label,
-                     labels = label) +
+                     breaks = breaks,
+                     labels = labels) +
   scale_shape_discrete(name = "模型评价指标：") +
   labs(x = "文本向量长度", y = "指标值") +
   theme(axis.title.x = element_text(family = "RMN", size = 30),
@@ -46,17 +51,18 @@ line_svm_word2vec
 data_svm_tfidf <- data_svm %>% filter(cut_type == "TF-IDF")
 data_svm_tfidf_min <- min(data_svm_tfidf$result)
 data_svm_tfidf_max <- max(data_svm_tfidf$result)
-label = round(seq(data_svm_tfidf_min, data_svm_tfidf_max, (data_svm_tfidf_max-data_svm_tfidf_min)/5), 3)
+breaks = round(seq(data_svm_tfidf_min, data_svm_tfidf_max, (data_svm_tfidf_max-data_svm_tfidf_min)/5), 3)
+labels = paste(breaks*100, "%", sep = "")
 line_svm_tfidf <- ggplot() +
   geom_point(data = data_svm_tfidf, aes(x = vectorsize, y = result, shape = index), size = 4) +
-  geom_line(data = data_svm_tfidf %>% filter(index == "Accuracy"), aes(x = vectorsize, y = result), size = 1.3) +
-  geom_line(data = data_svm_tfidf %>% filter(index == "Precision"), aes(x = vectorsize, y = result), size = 1.3) +
-  geom_line(data = data_svm_tfidf %>% filter(index == "Recall"), aes(x = vectorsize, y = result), size = 1.3) +
-  geom_line(data = data_svm_tfidf %>% filter(index == "F1-Score"), aes(x = vectorsize, y = result), size = 1.3) +
+  geom_line(data = data_svm_tfidf %>% filter(index == "准确率"), aes(x = vectorsize, y = result), size = 1.3) +
+  geom_line(data = data_svm_tfidf %>% filter(index == "精确率"), aes(x = vectorsize, y = result), size = 1.3) +
+  geom_line(data = data_svm_tfidf %>% filter(index == "召回率"), aes(x = vectorsize, y = result), size = 1.3) +
+  geom_line(data = data_svm_tfidf %>% filter(index == "F1分数"), aes(x = vectorsize, y = result), size = 1.3) +
   scale_x_continuous(breaks = c(seq(100, 1000, 100), 1066)) +
   scale_y_continuous(limits = c(data_svm_tfidf_min, data_svm_tfidf_max),
-                     breaks = label,
-                     labels = label) +
+                     breaks = breaks,
+                     labels = labels) +
   scale_shape_discrete(name = "模型评价指标：") +
   labs(x = "文本向量长度", y = "指标值") +
   theme(axis.title.x = element_text(family = "RMN", size = 30),
@@ -74,17 +80,18 @@ line_svm_tfidf
 data_svm_lda <- data_svm %>% filter(cut_type == "LDA")
 data_svm_lda_min <- min(data_svm_lda$result)
 data_svm_lda_max <- max(data_svm_lda$result)
-label = round(seq(data_svm_lda_min, data_svm_lda_max, (data_svm_lda_max-data_svm_lda_min)/5), 3)
+breaks = round(seq(data_svm_lda_min, data_svm_lda_max, (data_svm_lda_max-data_svm_lda_min)/5), 3)
+labels = paste(breaks*100, "%", sep = "")
 line_svm_lda <- ggplot() +
   geom_point(data = data_svm_lda, aes(x = vectorsize, y = result, shape = index), size = 4) +
-  geom_line(data = data_svm_lda %>% filter(index == "Accuracy"), aes(x = vectorsize, y = result), size = 1.3) +
-  geom_line(data = data_svm_lda %>% filter(index == "Precision"), aes(x = vectorsize, y = result), size = 1.3) +
-  geom_line(data = data_svm_lda %>% filter(index == "Recall"), aes(x = vectorsize, y = result), size = 1.3) +
-  geom_line(data = data_svm_lda %>% filter(index == "F1-Score"), aes(x = vectorsize, y = result), size = 1.3) +
+  geom_line(data = data_svm_lda %>% filter(index == "准确率"), aes(x = vectorsize, y = result), size = 1.3) +
+  geom_line(data = data_svm_lda %>% filter(index == "精确率"), aes(x = vectorsize, y = result), size = 1.3) +
+  geom_line(data = data_svm_lda %>% filter(index == "召回率"), aes(x = vectorsize, y = result), size = 1.3) +
+  geom_line(data = data_svm_lda %>% filter(index == "F1分数"), aes(x = vectorsize, y = result), size = 1.3) +
   scale_x_continuous(breaks = seq(100, 1000, 100)) +
   scale_y_continuous(limits = c(data_svm_lda_min, data_svm_lda_max),
-                     breaks = label,
-                     labels = label) +
+                     breaks = breaks,
+                     labels = labels) +
   scale_shape_discrete(name = "模型评价指标：") +
   labs(x = "文本向量长度", y = "指标值") +
   theme(axis.title.x = element_text(family = "RMN", size = 30),
@@ -102,17 +109,18 @@ line_svm_lda
 data_svm_doc2vec <- data_svm %>% filter(cut_type == "Doc2Vec")
 data_svm_doc2vec_min <- min(data_svm_doc2vec$result)
 data_svm_doc2vec_max <- max(data_svm_doc2vec$result)
-label = round(seq(data_svm_doc2vec_min, data_svm_doc2vec_max, (data_svm_doc2vec_max-data_svm_doc2vec_min)/5), 3)
+breaks = round(seq(data_svm_doc2vec_min, data_svm_doc2vec_max, (data_svm_doc2vec_max-data_svm_doc2vec_min)/5), 3)
+labels = paste(breaks*100, "%", sep = "")
 line_svm_doc2vec <- ggplot() +
   geom_point(data = data_svm_doc2vec, aes(x = vectorsize, y = result, shape = index), size = 4) +
-  geom_line(data = data_svm_doc2vec %>% filter(index == "Accuracy"), aes(x = vectorsize, y = result), size = 1.3) +
-  geom_line(data = data_svm_doc2vec %>% filter(index == "Precision"), aes(x = vectorsize, y = result), size = 1.3) +
-  geom_line(data = data_svm_doc2vec %>% filter(index == "Recall"), aes(x = vectorsize, y = result), size = 1.3) +
-  geom_line(data = data_svm_doc2vec %>% filter(index == "F1-Score"), aes(x = vectorsize, y = result), size = 1.3) +
+  geom_line(data = data_svm_doc2vec %>% filter(index == "准确率"), aes(x = vectorsize, y = result), size = 1.3) +
+  geom_line(data = data_svm_doc2vec %>% filter(index == "精确率"), aes(x = vectorsize, y = result), size = 1.3) +
+  geom_line(data = data_svm_doc2vec %>% filter(index == "召回率"), aes(x = vectorsize, y = result), size = 1.3) +
+  geom_line(data = data_svm_doc2vec %>% filter(index == "F1分数"), aes(x = vectorsize, y = result), size = 1.3) +
   scale_x_continuous(breaks = seq(100, 1000, 100)) +
   scale_y_continuous(limits = c(data_svm_doc2vec_min, data_svm_doc2vec_max),
-                     breaks = label,
-                     labels = label) +
+                     breaks = breaks,
+                     labels = labels) +
   scale_shape_discrete(name = "模型评价指标：") +
   labs(x = "文本向量长度", y = "指标值") +
   theme(axis.title.x = element_text(family = "RMN", size = 30),
