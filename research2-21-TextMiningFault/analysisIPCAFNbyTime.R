@@ -96,7 +96,7 @@ mycolors <- c("#F8766D", "#00BA38", "#619CFF")
 # dataH45 <- functionTimeData(dataResultsH45)
 # data.Index.byTime <- rbind(dataH10, dataH15, dataH20, dataH25, dataH30, dataH35, dataH40, dataH45)
 
-data.Index.byTime <- read.csv("C:/Users/ylc/jgy/research/16-CIPCABPNN/test/resultBytimeCIPCAFN")
+data.Index.byTime <- read.csv("C:/Users/ylc/jgy/research/16-CIPCABPNN/test/resultBytimeCIPCAFN.csv")
 
 data.Index.byTime$Neurons <- rep(c("隐神经元数量:10",
                                    "隐神经元数量:15",
