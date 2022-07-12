@@ -14,14 +14,14 @@ dataPCAROC$Method <- rep("PCA", nrow(dataPCAROC))
 dataROC <- rbind(dataIPCAROC, dataPCAROC)
 dataROC$Neurons <- factor(dataROC$Neurons,
                           levels = c(10, 15, 20, 25, 30, 35, 40, 45),
-                          labels = c("10 Hidden Neurons", "15 Hidden Neurons", "20 Hidden Neurons", "25 Hidden Neurons", "30 Hidden Neurons", "35 Hidden Neurons", "40 Hidden Neurons", "45 Hidden Neurons"))
+                          labels = c("隐神经元数量：10", "隐神经元数量：15", "隐神经元数量：20", "隐神经元数量：25", "隐神经元数量：30", "隐神经元数量：35", "隐神经元数量：40", "隐神经元数量：45"))
 dataROC$Method <- factor(dataROC$Method, levels = c("PCA", "IPCA"), ordered = TRUE)
 gpROCbyMethod <- ggplot(data = dataROC %>% filter(Type=="mean")) +
   geom_line(aes(x = FPR, y = TPR, color = Method), size = 2) +
   scale_x_continuous(breaks = c(0, 0.25, 0.5, 0.75, 1),
-                     labels = c(0, 0.25, 0.5, 0.75, 1)) +
+                     labels = c(0, "25%", "50%", "75%", "100%")) +
   scale_y_continuous(breaks = c(0, 0.25, 0.5, 0.75, 1),
-                     labels = c(0, 0.25, 0.5, 0.75, 1)) +
+                     labels = c(0, "25%", "50%", "75%", "100%")) +
   scale_color_discrete(name = "模型:", breaks = c("PCA", "IPCA"), labels = c("PCA-BPNN", "CIPCA-BPNN")) +
   labs(x = "假正率（False positive rate, FPR）", y = "真正率（True positive rate, TPR）") +
   facet_wrap(.~Neurons, nrow = 4) +
