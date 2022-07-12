@@ -7,14 +7,15 @@ windowsFonts(RMN = windowsFont("Times New Roman"))
 data <- read.csv("result_handle.csv")
 names(data) <- c("result", "index", "cut_type", "vectorsize", "algorithm", "paramter", "type", "k")
 data$type <- factor(data$type, levels = c("control1", "control2", "goal"),
-                    labels = c("MC1", "MC2", "M"), ordered = TRUE)
+                    labels = c("Model 1", "Model 2", "Model 3"), ordered = TRUE)
 data <- as_tibble(data)
+
+plot_size <- 35
 
 # »­TF-IDF
 # Accuracy
 plot_index <- "Accuracy"
 plot_cut_type <- "TF-IDF"
-plot_size <- 20
 data_plot <- data %>% filter(index == plot_index & cut_type == plot_cut_type)
 data_plot$vectorsize <- factor(data_plot$vectorsize)
 bar <- ggplot(data = (data_plot), aes(x = vectorsize, y = result, fill = type)) +
@@ -38,7 +39,6 @@ ggsave(bar, dpi = 1200, height = 8, width = 7, filename = paste("C:/Users/ylc/De
 # Precision
 plot_index <- "Precision"
 plot_cut_type <- "TF-IDF"
-plot_size <- 20
 data_plot <- data %>% filter(index == plot_index & cut_type == plot_cut_type)
 data_plot$vectorsize <- factor(data_plot$vectorsize)
 bar <- ggplot(data = (data_plot), aes(x = vectorsize, y = result, fill = type)) +
@@ -62,7 +62,6 @@ ggsave(bar, dpi = 1200, height = 8, width = 7, filename = paste("C:/Users/ylc/De
 # Recall
 plot_index <- "Recall"
 plot_cut_type <- "TF-IDF"
-plot_size <- 20
 data_plot <- data %>% filter(index == plot_index & cut_type == plot_cut_type)
 data_plot$vectorsize <- factor(data_plot$vectorsize)
 bar <- ggplot(data = (data_plot), aes(x = vectorsize, y = result, fill = type)) +
@@ -86,7 +85,6 @@ ggsave(bar, dpi = 1200, height = 8, width = 7, filename = paste("C:/Users/ylc/De
 # F1-Score
 plot_index <- "F1-Score"
 plot_cut_type <- "TF-IDF"
-plot_size <- 20
 data_plot <- data %>% filter(index == plot_index & cut_type == plot_cut_type)
 data_plot$vectorsize <- factor(data_plot$vectorsize)
 bar <- ggplot(data = (data_plot), aes(x = vectorsize, y = result, fill = type)) +
